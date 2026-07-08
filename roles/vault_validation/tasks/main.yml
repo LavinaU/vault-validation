@@ -1,21 +1,41 @@
+# NOTE: vault API calls are simulated right now, and will be hooked up to sandbox in later commit. replace debug task w/real calls once vault endpoint/credentials are available 
 ---
 - name: Display validation target
   debug:
     msg: "Running Vault validation on {{ ansible_facts['hostname'] }}"
 
-- name: Define required Vault entries
-  set_fact:
-    vault_required_entries:
-      - hana_system_password
-      - sap_sid_admin
-      - backup_credentials
-      - monitoring_user
 
-- name: Show required Vault entries
-  debug:
-    var: vault_required_entries
+- name: Validate Vault configuration
+  assert:
+    that:
+      - vault_url is defined
+      - vault_secret_paths is defined
+    fail_msg: "Vault configuration is missing required variables"
 
-- name: Iterate over required Vault entries
+
+- name: Check Vault connectivity (simulated for now)
   debug:
-    msg: "Checking existence of {{ item }}"
-  loop: "{{ vault_required_entries }}"
+    msg: "Would connect to Vault at {{ vault_url }}"
+
+
+- name: Iterate over required Vault secrets
+  debug:
+    msg: "Checking Vault path: {{ item }}"
+  loop: "{{ vault_secret_paths }}"
+
+- name: Query Vault for secret (disabled until access available)
+  debug:
+    msg: "SIMULATION - Would query {{ item }}"
+  loop: "{{ vault_secret_paths }}"
+
+- name: Report Vault validation results
+  debug:
+    msg: >-
+      {% if item.status == 200 %}
+      PASS - {{ item.item }} exists
+      {% elif item.status == 404 %}
+      FAIL - {{ item.item }} missing
+      {% else %}
+      WARNING - Could not verify {{ item.item }}
+      {% endif %}
+  loop: "{{ vault_api_results.results | default([]) }}"

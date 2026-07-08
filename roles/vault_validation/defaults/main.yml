@@ -1,14 +1,15 @@
 #SPDX-License-Identifier: MIT-0
 ---
-# Vault validation configuration
+# Vault connection (do NOT hardcode secrets later)
+vault_url: "https://vault.example.com"
+vault_token: "{{ lookup('env', 'VAULT_TOKEN') }}"
 
-vault_provider: "not_configured"
+# SAP HANA / S4PCE expected secrets
+vault_secret_paths:
+  - secret/data/sap/hana/system
+  - secret/data/sap/hana/sidadm
+  - secret/data/sap/hana/backup
+  - secret/data/sap/hana/monitoring
 
-required_secrets:
-  - sap_admin_password
-  - hana_system_password
-  - sap_sid
-  - aws_access_key
-  - aws_secret_key
-
-vault_config_path: /etc/vault
+# Fail behavior
+vault_fail_on_missing: false
