@@ -1,0 +1,7 @@
+---
+- name: Validate Vault Entries
+  hosts: vault_targets
+  gather_facts: yes
+
+  roles:
+    - vault_validation

@@ -1,3 +1,14 @@
 #SPDX-License-Identifier: MIT-0
 ---
-# defaults file for roles/vault_validation
+# Vault validation configuration
+
+vault_provider: "not_configured"
+
+required_secrets:
+  - sap_admin_password
+  - hana_system_password
+  - sap_sid
+  - aws_access_key
+  - aws_secret_key
+
+vault_config_path: /etc/vault

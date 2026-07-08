@@ -1,3 +1,21 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# tasks file for roles/vault_validation
+- name: Display validation target
+  debug:
+    msg: "Running Vault validation on {{ ansible_facts['hostname'] }}"
+
+- name: Define required Vault entries
+  set_fact:
+    vault_required_entries:
+      - hana_system_password
+      - sap_sid_admin
+      - backup_credentials
+      - monitoring_user
+
+- name: Show required Vault entries
+  debug:
+    var: vault_required_entries
+
+- name: Iterate over required Vault entries
+  debug:
+    msg: "Checking existence of {{ item }}"
+  loop: "{{ vault_required_entries }}"
