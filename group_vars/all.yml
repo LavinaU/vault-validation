@@ -1,0 +1,9 @@
+vault_enabled: false
+
+vault_endpoint: "https://vault.example.com"
+
+vault_secret_paths:
+  - secret/data/sap/hana/system
+  - secret/data/sap/hana/sidadm
+  - secret/data/sap/hana/backup
+  - secret/data/sap/hana/monitoring

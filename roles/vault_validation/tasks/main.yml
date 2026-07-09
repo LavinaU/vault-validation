@@ -10,14 +10,12 @@
       - " System: {{ ansible_facts['system'] }}"
       - "========================================="
 
-# Define required SAP secrets
-- name: Define required SAP Vault paths
-  set_fact:
-    vault_secret_paths:
-      - secret/data/sap/hana/system
-      - secret/data/sap/hana/sidadm
-      - secret/data/sap/hana/backup
-      - secret/data/sap/hana/monitoring
+- name: Validate Vault configuration variables
+  assert:
+    that:
+      - vault_secret_paths is defined
+      - vault_secret_paths | length > 0
+    fail_msg: "Vault configuration is missing required secret paths"
 
 # Simulated Vault connectivity
 - name: Validate Vault connectivity (simulated)
