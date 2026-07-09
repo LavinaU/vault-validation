@@ -1,7 +1,24 @@
 ---
 - name: Validate Vault Entries
-  hosts: vault_targets
+  hosts: localhost
   gather_facts: yes
 
-  roles:
-    - vault_validation
+  tasks:
+
+    - name: Ensure environment is provided
+      assert:
+        that:
+          - env is defined
+        fail_msg: "You must pass env=dev or env=prod"
+
+    - name: Load environment-specific variables
+      include_vars:
+        file: "{{ playbook_dir }}/../group_vars/{{ env }}.yml"
+
+    - name: Display selected environment
+      debug:
+        msg: "Running in environment: {{ env }}"
+
+    - name: Run vault validation role
+      include_role:
+        name: vault_validation

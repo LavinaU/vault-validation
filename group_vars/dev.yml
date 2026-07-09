@@ -1,0 +1,5 @@
+vault_endpoint: "https://dev-vault.example.com"
+
+vault_secret_paths:
+  - secret/data/dev/sap/hana/system
+  - secret/data/dev/sap/hana/sidadm

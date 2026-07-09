@@ -1,0 +1,7 @@
+vault_endpoint: "https://prod-vault.example.com"
+
+vault_secret_paths:
+  - secret/data/prod/sap/hana/system
+  - secret/data/prod/sap/hana/sidadm
+  - secret/data/prod/sap/hana/backup
+  - secret/data/prod/sap/hana/monitoring
