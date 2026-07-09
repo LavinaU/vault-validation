@@ -1,4 +1,4 @@
-# NOTE: vault API calls are simulated right now, and will be hooked up to sandbox in later commit. replace debug task w/real calls once vault endpoint/credentials are available 
+# NOTE: vault API calls are simulated right now, and will be hooked up to sandbox in later commit.
 ---
 
 - name: Display validation header
@@ -10,7 +10,7 @@
       - " System: {{ ansible_facts['system'] }}"
       - "========================================="
 
-# Define required SAP secrets (aligned to real landscape)
+# Define required SAP secrets
 - name: Define required SAP Vault paths
   set_fact:
     vault_secret_paths:
@@ -24,23 +24,39 @@
   debug:
     msg: "PASS - Vault endpoint reachable (simulation mode)"
 
-# Simulated secret validation loop
+# Simulate validation (intentionally fail backup for demo)
 - name: Simulate Vault secret validation
   set_fact:
-    vault_results: "{{ vault_results | default([]) + [ {'path': item, 'status': 'PASS'} ] }}"
+    vault_validation_results: "{{ vault_validation_results | default([]) + [ {'path': item, 'status': ( 'FAIL' if 'backup' in item else 'PASS' ) } ] }}"
   loop: "{{ vault_secret_paths }}"
 
-# Display per-secret results
+# Display per-secret results (dynamic PASS/FAIL)
 - name: Display Vault validation results
   debug:
-    msg: "PASS - {{ item.path }} exists"
-  loop: "{{ vault_results }}"
+    msg: "{{ item.status }} - {{ item.path }}"
+  loop: "{{ vault_validation_results }}"
+
+# Enforce validation (pipeline-style)
+- name: Enforce Vault validation (fail if missing)
+  assert:
+    that:
+      - item.status == "PASS"
+    fail_msg: "FAIL - Vault secret missing: {{ item.path }}"
+    success_msg: "PASS - Vault secret exists: {{ item.path }}"
+  loop: "{{ vault_validation_results }}"
+  ignore_errors: true   # keeps playbook running for demo
+
+# Determine overall status
+- name: Determine overall Vault validation status
+  set_fact:
+    vault_overall_status: >-
+      {{ 'FAIL' if (vault_validation_results | selectattr('status','equalto','FAIL') | list | length > 0)
+         else 'PASS' }}
 
 # Final summary
 - name: Display final validation summary
   debug:
     msg:
       - "-----------------------------------------"
-      - " FINAL STATUS: PASS"
-      - " All required Vault secrets validated (simulation)"
+      - " FINAL STATUS: {{ vault_overall_status }}"
       - "-----------------------------------------"
