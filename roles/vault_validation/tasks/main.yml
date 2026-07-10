@@ -6,7 +6,7 @@
     msg:
       - "========================================="
       - " VAULT VALIDATION REPORT"
-      - " Host: {{ ansible_hostname }}"
+      - " Host: {{ ansible_facts['hostname'] }}"
       - " System: {{ ansible_facts['system'] }}"
       - "========================================="
 
